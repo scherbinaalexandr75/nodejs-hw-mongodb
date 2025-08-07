@@ -1,6 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
+import router from './routers/contacts.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+
 import mongoose from 'mongoose';
 
 const contactSchema = new mongoose.Schema(
@@ -25,85 +29,31 @@ const contactSchema = new mongoose.Schema(
       required: [true, 'Set contact type'],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Contact = mongoose.model('Contact', contactSchema);
+export default Contact;
 
+export const getAllContacts = async () => {
+  const contacts = await Contact.find();
+  return contacts;
+};
 
-async function getAllContacts() {
-  return await Contact.find();
-}
-
-async function getContactById(id) {
+export const getContactById = async (id) => {
   return await Contact.findById(id);
-}
+};
 
-
-async function getContacts(req, res) {
+export async function setupServer() {
   try {
-    const contacts = await getAllContacts();
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully found contacts!',
-      data: contacts,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 500,
-      message: 'Internal Server Error',
-      error: error.message,
-    });
-  }
-}
-
-async function getContact(req, res) {
-  try {
-    const { id } = req.params;
-    const contact = await getContactById(id);
-
-    if (!contact) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Contact not found',
-      });
-    }
-
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully found contact!',
-      data: contact,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 500,
-      message: 'Internal Server Error',
-      error: error.message,
-    });
-  }
-}
-
-
-const router = express.Router();
-router.get('/', getContacts);
-router.get('/:id', getContact);
-
-
- export async function setupServer() {
-  try {
-    // await mongoose.connect('mongodb://localhost:27017/contactsdb');
-    // console.log('MongoDB connected');
-
     const app = express();
     app.use(cors());
     app.use(pino());
     app.use(express.json());
 
     app.use('/contacts', router);
-
-    app.use((req, res) => {
-      res.status(404).json({ message: 'Not found' });
-    });
+    app.use('*', notFoundHandler);
+    app.use(errorHandler);
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
@@ -112,7 +62,4 @@ router.get('/:id', getContact);
   } catch (error) {
     console.error('Server failed to start:', error.message);
   }
-}
-
-
-
+};
