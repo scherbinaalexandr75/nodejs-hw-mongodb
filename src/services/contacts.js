@@ -1,38 +1,23 @@
-// import mongoose from 'mongoose';
+import { Contact } from '../server.js';
 
-// const contactSchema = new mongoose.Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: [true, 'Set name for contact'],
-//     },
-//     phoneNumber: {
-//       type: String,
-//       required: [true, 'Set phone number for contact'],
-//     },
-//     email: String,
-//     isFavourite: {
-//       type: Boolean,
-//       default: false,
-//     },
-//     contactType: {
-//       type: String,
-//       enum: ['work', 'home', 'personal'],
-//       default: 'personal',
-//       required: [true, 'Set contact type'],
-//     },
-//   },
-//   { timestamps: true },
-// );
+export const getAllContacts = async () => {
+  return await Contact.find();
+};
 
-// const Contact = mongoose.model('Contact', contactSchema);
-// export default Contact;
+export const getContactById = async (id) => {
+  return await Contact.findById(id);
+};
 
-// export const getAllContacts = async () => {
-//   const contacts = await Contact.find();
-//   return contacts;
-// };
+export const createContactService = async (contactData) => {
+  const  newContact = await Contact.create(contactData);
+  return newContact;
+};
 
-// export const getContactById = async (id) => {
-//   return await Contact.findById(id);
-// };
+export const patchContactService = async (id, updateData) => {
+return Contact.findByIdAndUpdate(id, updateData, {new: true });
+};
+
+export const deleteContact = async (id) => {
+  const result = await Contact.findByIdAndDelete(id);
+  return result !== null; 
+};
