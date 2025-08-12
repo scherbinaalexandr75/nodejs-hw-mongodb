@@ -44,6 +44,11 @@ export async function setupServer() {
 
   app.use('/contacts', router);
 
+
+  app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Server is running successfully!' });
+  });
+
   app.use(errorHandler);
 
   app.use(notFoundHandler);
