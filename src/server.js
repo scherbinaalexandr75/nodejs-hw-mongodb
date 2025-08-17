@@ -1,39 +1,10 @@
 import cors from 'cors';
 import pino from 'pino-http';
 import express from 'express';
-// import mongoose from 'mongoose';
 import router from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
-// const contactSchema = new mongoose.Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: [true, 'Set name for contact'],
-//     },
-//     phoneNumber: {
-//       type: String,
-//       required: [true, 'Set phone number for contact'],
-//     },
-//     email: String,
-//     isFavourite: {
-//       type: Boolean,
-//       default: false,
-//     },
-//     contactType: {
-//       type: String,
-//       enum: ['work', 'home', 'personal'],
-//       default: 'personal',
-//       required: [true, 'Set contact type'],
-//     },
-//   },
-//   { timestamps: true,
-//     versionKey: false
-//    },
-// );
-
-// export const Contact = mongoose.model('Contact', contactSchema);
 
 export async function setupServer() {
   const app = express();

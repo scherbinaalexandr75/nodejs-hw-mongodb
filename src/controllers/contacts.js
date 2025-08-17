@@ -11,13 +11,16 @@ export const getContacts = async (req, res) => {
     isFavourite,
   } = req.query;
 
+  const parsedIsFavourite =
+    isFavourite === 'true' ? true : isFavourite === 'false' ? false : undefined;
+
   const paginationResult = await contactsService.getAllContacts(
-    page,
-    perPage,
+    Number(page),
+    Number(perPage),
     sortBy,
     sortOrder,
     type,
-    isFavourite,
+    parsedIsFavourite,
   );
 
   res.status(200).json({

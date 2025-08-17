@@ -4,7 +4,7 @@ const nameRule = Joi.string().min(3).max(20);
 const phoneRule = Joi.string().min(3).max(20);
 const emailRule = Joi.string().email().allow(null,"");
 const isFavouriteRule = Joi.boolean();
-const contactTypeRule = Joi.string().valid('work', 'other', 'personal');
+const contactTypeRule = Joi.string().valid('work', 'home', 'personal');
 
 export const createContactSchema = Joi.object({
   name: nameRule.required(),
