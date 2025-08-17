@@ -2,12 +2,28 @@ import createHttpError from 'http-errors';
 import * as contactsService from '../services/contacts.js';
 
 export const getContacts = async (req, res) => {
-  const contacts = await contactsService.getAllContacts();
+  const {
+    page = 1,
+    perPage = 10,
+    sortBy = 'name',
+    sortOrder = 'asc',
+    type,
+    isFavourite,
+  } = req.query;
+
+  const paginationResult = await contactsService.getAllContacts(
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    type,
+    isFavourite,
+  );
 
   res.status(200).json({
     status: 200,
     message: 'Successfully found contacts!',
-    data: contacts,
+    data: paginationResult,
   });
 };
 
@@ -26,15 +42,9 @@ export const getContact = async (req, res) => {
   });
 };
 
-export const createContactController = async (req, res, next) => {
+export const createContactController = async (req, res) => {
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
-  if (!name || !phoneNumber || !contactType) {
-    throw createHttpError(
-      400,
-      'Name, phone number, and contact type are required',
-    );
-  }
   const newContact = await contactsService.createContactService({
     name,
     phoneNumber,
@@ -53,7 +63,10 @@ export const createContactController = async (req, res, next) => {
 export const patchContactController = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-  const updateContact = await contactsService.patchContactService(id, updateData);
+  const updateContact = await contactsService.patchContactService(
+    id,
+    updateData,
+  );
 
   if (!updateContact) {
     throw createHttpError(404, `Contact with id ${id} not found`);

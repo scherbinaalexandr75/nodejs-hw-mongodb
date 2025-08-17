@@ -1,17 +1,20 @@
-import { HttpError } from 'http-errors';
-
 export const errorHandler = (err, req, res, next) => {
-  if (err instanceof HttpError) {
-    return res.status(err.status).json({
-      status: err.status,
-      message: err.message || err.name,
-      data: err.message
-    });
+  if (err.name === 'ValidationError') {
+    err.status = 400;
+    err.message = err.message.replace('Validation failed: ', '');
   }
 
-  res.status(500).json({
-    status: 500,
-    message: 'Something went wrong',
-    data: err.message,
+  if (err.name === 'CastError') {
+    err.status = 400;
+    err.message = `Invalid ${err.path}: ${err.value}`;
+  }
+
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || 'Something went wrong';
+
+  res.status(status).json({
+    status,
+    message,
+    data: err.data || null,
   });
 };
