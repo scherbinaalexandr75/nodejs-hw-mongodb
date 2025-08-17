@@ -70,7 +70,7 @@ export const refreshSession = async (refreshToken) => {
   let payload;
   try {
     payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-  } catch (error) {
+  } catch {
     throw createHttpError(401, 'Invalid refresh token');
   }
 
@@ -90,6 +90,12 @@ export const refreshSession = async (refreshToken) => {
     { expiresIn: REFRESH_TOKEN_EXPIRES },
   );
 
+  const newRefreshToken = jwt.sign(
+    { user_Id: payload.userId },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: REFRESH_TOKEN_EXPIRES },
+  );
+
   const accessTokenValidUntil = new Date(Date.now() + 15 * 60 * 1000);
 
   await Session.create({
@@ -100,4 +106,22 @@ export const refreshSession = async (refreshToken) => {
   });
 
   return { accessToken, newRefreshToken };
+};
+
+export const logoutUser = async (refreshToken) => {
+  let payload;
+  try{
+    payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  } catch {
+    throw createHttpError(401, "Invalid refresh token");
+  }
+
+  const session = await Session.findOne({
+    userId: payload.userId,
+    refreshToken,
+  });
+  if (!session) {
+    throw createHttpError(401, "Session not found");
+  }
+  await Session.deleteOne({ _id: session._id });
 };

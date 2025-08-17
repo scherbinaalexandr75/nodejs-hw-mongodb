@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import * as authService from '../services/auth.js';
 import * as contactsService from '../services/contacts.js';
 
 export const getContacts = async (req, res) => {
@@ -91,4 +92,24 @@ export const deleteContact = async (req, res) => {
   }
 
   res.status(204).send();
+};
+
+export const logout = async (req, res, next) => {
+  try{
+    const refreshToken = req.cookies?.refreshToken;
+
+    if(!refreshToken){
+      throw createHttpError(401, "Refresh token is missing");
+    }
+    await authService.logoutUser(refreshToken);
+
+    res.clearCookie("refreshToken",{
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 };
