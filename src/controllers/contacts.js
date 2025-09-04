@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import * as authService from '../services/auth.js';
+// import * as authService from '../services/auth.js';
 import * as contactsService from '../services/contacts.js';
 
 export const getContacts = async (req, res) => {
@@ -15,6 +15,8 @@ export const getContacts = async (req, res) => {
   const parsedIsFavourite =
     isFavourite === 'true' ? true : isFavourite === 'false' ? false : undefined;
 
+    const userId = req.user._id;
+
   const paginationResult = await contactsService.getAllContacts(
     Number(page),
     Number(perPage),
@@ -22,6 +24,7 @@ export const getContacts = async (req, res) => {
     sortOrder,
     type,
     parsedIsFavourite,
+    userId,
   );
 
   res.status(200).json({
@@ -33,7 +36,9 @@ export const getContacts = async (req, res) => {
 
 export const getContact = async (req, res) => {
   const { id } = req.params;
-  const contact = await contactsService.getContactById(id);
+  const userId = req.user._id;
+
+  const contact = await contactsService.getContactById(id, userId);
 
   if (!contact) {
     throw createHttpError(404, `Contact with id ${id} not found`);
@@ -48,6 +53,7 @@ export const getContact = async (req, res) => {
 
 export const createContactController = async (req, res) => {
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
+  const userId = req.user._id;
 
   const newContact = await contactsService.createContactService({
     name,
@@ -55,6 +61,7 @@ export const createContactController = async (req, res) => {
     email: email || null,
     isFavourite: isFavourite ?? false,
     contactType,
+    userId,
   });
 
   res.status(201).json({
@@ -67,9 +74,13 @@ export const createContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
+  const userId = req.user._id;
+
+
   const updateContact = await contactsService.patchContactService(
     id,
     updateData,
+    userId,
   );
 
   if (!updateContact) {
@@ -85,7 +96,8 @@ export const patchContactController = async (req, res) => {
 
 export const deleteContact = async (req, res) => {
   const { id } = req.params;
-  const isDeleted = await contactsService.deleteContact(id);
+  const userId = req.user._id;
+  const isDeleted = await contactsService.deleteContact(id, userId);
 
   if (!isDeleted) {
     throw createHttpError(404, `Contact with id ${id} not found`);
@@ -94,22 +106,4 @@ export const deleteContact = async (req, res) => {
   res.status(204).send();
 };
 
-export const logout = async (req, res, next) => {
-  try{
-    const refreshToken = req.cookies?.refreshToken;
 
-    if(!refreshToken){
-      throw createHttpError(401, "Refresh token is missing");
-    }
-    await authService.logoutUser(refreshToken);
-
-    res.clearCookie("refreshToken",{
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-};

@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt';
-import createHttpError from 'http-errors';
-import User from '../models/user.js';
-import { useSyncExternalStore } from 'react';
 import jwt from 'jsonwebtoken';
+import User from '../models/users.js';
+import createHttpError from 'http-errors';
 import Session from '../models/session.js';
 
 const ACCESS_TOKEN_EXPIRES = '15m';
@@ -36,7 +35,7 @@ export const loginUser = async ({ email, password }) => {
 
   const isPasswordValid = await bcrypt.compare(
     password,
-    useSyncExternalStore.password,
+    user.password,
   );
   if (!isPasswordValid) {
     throw createHttpError(401, 'Invalid email or password');
@@ -47,7 +46,7 @@ export const loginUser = async ({ email, password }) => {
   });
 
   const refreshToken = jwt.sign(
-    { user_id: user._id },
+    { userId: user._id },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: REFRESH_TOKEN_EXPIRES },
   );
@@ -86,12 +85,12 @@ export const refreshSession = async (refreshToken) => {
 
   const accessToken = jwt.sign(
     { userId: payload.userId },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: REFRESH_TOKEN_EXPIRES },
+    process.env.JWT_SECRET,
+    { expiresIn: ACCESS_TOKEN_EXPIRES },
   );
 
   const newRefreshToken = jwt.sign(
-    { user_Id: payload.userId },
+    { userId: payload.userId },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: REFRESH_TOKEN_EXPIRES },
   );
@@ -110,10 +109,10 @@ export const refreshSession = async (refreshToken) => {
 
 export const logoutUser = async (refreshToken) => {
   let payload;
-  try{
+  try {
     payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   } catch {
-    throw createHttpError(401, "Invalid refresh token");
+    throw createHttpError(401, 'Invalid refresh token');
   }
 
   const session = await Session.findOne({
@@ -121,7 +120,7 @@ export const logoutUser = async (refreshToken) => {
     refreshToken,
   });
   if (!session) {
-    throw createHttpError(401, "Session not found");
+    throw createHttpError(401, 'Session not found');
   }
   await Session.deleteOne({ _id: session._id });
 };

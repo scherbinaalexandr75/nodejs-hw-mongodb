@@ -4,7 +4,7 @@ import express from 'express';
 import router from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-
+import authRouter from './routers/auth.js';
 
 export async function setupServer() {
   const app = express();
@@ -16,12 +16,12 @@ export async function setupServer() {
   app.use(express.json());
 
   app.use('/contacts', router);
-
+  app.use('/auth', authRouter);
 
   app.get('/', (req, res) => {
     res.status(200).json({
       message: 'Server is running successfully!',
-    timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
     });
   });
 

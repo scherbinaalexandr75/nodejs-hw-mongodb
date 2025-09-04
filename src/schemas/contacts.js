@@ -1,8 +1,8 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 const nameRule = Joi.string().min(3).max(20);
 const phoneRule = Joi.string().min(3).max(20);
-const emailRule = Joi.string().email().allow(null,"");
+const emailRule = Joi.string().email().allow(null, '');
 const isFavouriteRule = Joi.boolean();
 const contactTypeRule = Joi.string().valid('work', 'home', 'personal');
 
