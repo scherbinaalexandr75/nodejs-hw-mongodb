@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/users.js';
 import createHttpError from 'http-errors';
+import Session from '../models/session.js';
 
 export const authenticate = async (req, res, next) => {
   try {
@@ -23,6 +24,11 @@ export const authenticate = async (req, res, next) => {
         throw createHttpError(401, 'Access token expired');
       }
       throw createHttpError(401, 'Invalid access token');
+    }
+
+    const session = await Session.findOne({userId: payload.userId, accessToken: token});
+    if (!session){
+      throw createHttpError(401, 'Session not found or logged out');
     }
 
     const user = await User.findById(payload.userId).select('-password');
