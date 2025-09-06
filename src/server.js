@@ -5,6 +5,7 @@ import router from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import authRouter from './routers/auth.js';
+import cookieParser from 'cookie-parser';
 
 export async function setupServer() {
   const app = express();
@@ -14,6 +15,7 @@ export async function setupServer() {
   app.use(pino());
 
   app.use(express.json());
+  app.use(cookieParser());
 
   app.use('/contacts', router);
   app.use('/auth', authRouter);
