@@ -8,6 +8,7 @@ import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
 
 export async function setupServer() {
+
   const app = express();
 
   app.use(cors());
