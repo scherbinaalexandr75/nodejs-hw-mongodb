@@ -1,6 +1,6 @@
 import createHttpError from 'http-errors';
-// import * as authService from '../services/auth.js';
 import * as contactsService from '../services/contacts.js';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 export const getContacts = async (req, res) => {
   const {
@@ -15,7 +15,7 @@ export const getContacts = async (req, res) => {
   const parsedIsFavourite =
     isFavourite === 'true' ? true : isFavourite === 'false' ? false : undefined;
 
-    const userId = req.user._id;
+  const userId = req.user._id;
 
   const paginationResult = await contactsService.getAllContacts(
     Number(page),
@@ -55,6 +55,13 @@ export const createContactController = async (req, res) => {
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
   const userId = req.user._id;
 
+  let photo = null;
+  if (req.file) {
+    photo = await uploadToCloudinary(
+      req.file.buffer || `${req.file.destination}/${req.file.filename}`,
+    );
+  }
+
   const newContact = await contactsService.createContactService({
     name,
     phoneNumber,
@@ -62,6 +69,7 @@ export const createContactController = async (req, res) => {
     isFavourite: isFavourite ?? false,
     contactType,
     userId,
+    photo,
   });
 
   res.status(201).json({
@@ -73,9 +81,15 @@ export const createContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
   const userId = req.user._id;
 
+  const updateData = { ...req.body };
+
+  if (req.file) {
+    updateData.photo = await uploadToCloudinary(
+      req.file.buffer || `${req.file.destination}/${req.file.filename}`,
+    );
+  }
 
   const updateContact = await contactsService.patchContactService(
     id,
@@ -105,5 +119,3 @@ export const deleteContact = async (req, res) => {
 
   res.status(204).send();
 };
-
-

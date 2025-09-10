@@ -16,6 +16,7 @@ import { contactQuerySchema } from '../schemas/pagination.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { validateQuery } from '../middlewares/validateQuery.js';
+import { upload } from '../middlewares/upload.js';
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.get('/:id', isValidId, ctrlWrapper(getContact));
 
 router.post(
   '/',
+  upload.single("photo"),
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
@@ -34,6 +36,7 @@ router.post(
 router.patch(
   '/:id',
   isValidId,
+  upload.single("photo"),
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );
