@@ -16,7 +16,7 @@ tags:
     description: API for session management
 servers:
   - url: http://localhost:5000
-  - url: https://hw6-email-and-images-1ecw.onrender.com
+  - url: https://hw7-swagger-eqeo.onrender.com
 paths:
   /contacts:
     get:
