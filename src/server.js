@@ -6,10 +6,13 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
+import { swaggerDocs } from './middlewares/swagger.js';
 
 export async function setupServer() {
 
   const app = express();
+
+  app.use('/api-docs', swaggerDocs());
 
   app.use(cors());
 

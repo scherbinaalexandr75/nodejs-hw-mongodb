@@ -1,0 +1,27 @@
+tags:
+  - Sessions
+summary: Refresh access token
+operationId: refreshToken
+description: 'Get new access token using refresh token from cookies'
+security:
+  - bearerAuth: []
+responses:
+  '200':
+    description: 'Successfully refreshed a session!'
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - accessToken
+          properties:
+            status:
+              type: integer
+              example: 200
+            accessToken:
+              type: string
+              description: New access token
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC9
+  '401':
+    $ref: ../../../components/responses/401.yaml

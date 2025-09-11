@@ -1,0 +1,39 @@
+type: object
+required:
+  - _id
+  - userId
+  - accessToken
+  - refreshToken
+  - accessTokenValidUntil
+  - refreshTokenValidUntil
+  - createdAt
+  - updatedAt
+properties:
+  _id:
+    description: "Session's id"
+    type: string
+    example: 68c076da57de15dcc87c61e3
+  userId:
+    description: "User's id"
+    type: objectId
+    example: 68bda1b1de7756d7a054fdad
+  accessToken:
+    description: 'Access Token'
+    type: string
+  refreshToken:
+    description: 'Refresh Token'
+    type: string
+  accessTokenValidUntil:
+    description: 'Access Token validity date'
+    type: date
+  refreshTokenValidUntil:
+    description: 'Refresh Token validity date'
+    type: date
+  createdAt:
+    description: 'Creating date'
+    type: date
+    example: 2025-09-07T15:23:11.498+00:00
+  updatedAt:
+    description: 'Updating date'
+    type: date
+    example: 2025-09-07T15:23:11.498+00:00

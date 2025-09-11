@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: ContactsBase
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description:
+    User-friendly database for storing contacts with email and image support.
+tags:
+  - name: Contacts
+    description: API for managing contacts
+  - name: Auth
+    description: API for authentication and user management
+  - name: Sessions
+    description: API for session management
+servers:
+  - url: http://localhost:5000
+  - url: https://hw6-email-and-images-1ecw.onrender.com
+paths:
+  /contacts:
+    get:
+      $ref: ../swagger/paths/contacts/get.yaml
+    post:
+      $ref: ../swagger/paths/contacts/post.yaml
+  /contacts/{id}:
+    get:
+      $ref: ../swagger/paths/contacts/{id}/get.yaml
+    patch: 
+      $ref: ../swagger/paths/contacts/{id}/patch.yaml
+    delete:
+      $ref: ../swagger/paths/contacts/{id}/delete.yaml
+  /auth/register:   
+    post:
+      $ref: ../swagger/paths/auth/register/post.yaml
+  /auth/login:
+    post:
+      $ref: ../swagger/paths/auth/login/post.yaml
+  /auth/logout:
+    post:
+      $ref: ../swagger/paths/auth/logout/post.yaml 
+  /auth/refresh:
+    post:
+      $ref: ../swagger/paths/auth/refresh/post.yaml    
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

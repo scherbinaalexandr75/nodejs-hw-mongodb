@@ -1,0 +1,31 @@
+type: object
+required:
+  - _id
+  - name
+  - email
+  - password
+  - createdAt
+  - updatedAt
+properties:
+  _id:
+    description: "User's id"
+    type: string
+    example: 68c076da57de15dcc87c61e3
+  name:
+    description: "User's name"
+    type: string
+    example: 'Petya Piatochkin'
+  email:
+    description: "User's email"
+    type: string
+  password:
+    description: "User's password"
+    type: string
+  createdAt:
+    description: 'Creating date'
+    type: string
+    example: 2025-09-07T15:23:11.498+00:00
+  updatedAt:
+    description: 'Updating date'
+    type: string
+    example: 2025-09-07T15:23:11.498+00:00
